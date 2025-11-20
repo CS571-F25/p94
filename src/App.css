@@ -1,8 +1,10 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 100vw;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  background: #f8f9fa;
 }
 
 .logo {
@@ -34,9 +36,34 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1.5em 1.2em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: 16px;
 }
 
 .read-the-docs {
   color: #888;
+}
+
+
+/* MapLibre map container styling */
+#maplibre-map {
+  min-height: 400px;
+  height: 520px !important;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 900px) {
+  .container.py-4 > div[style*='flex-direction: row'] {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  #maplibre-map {
+    min-height: 320px;
+    height: 320px !important;
+  }
 }
