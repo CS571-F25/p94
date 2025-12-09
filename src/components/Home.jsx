@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { login, signup, getCurrentUser } from '../utils/auth'
+import logo from '../assets/DotTheWorld.png'
 
 export default function Home() {
         const [mode, setMode] = useState('login') // 'login' or 'signup'
@@ -40,10 +41,35 @@ export default function Home() {
         if(user){
             return (
                 <div className="container py-4">
-                    <div className="p-4 bg-light rounded-3">
-                        <h1>Welcome back, {user.name}!</h1>
-                        <p className="lead">You're signed in. Visit the Map to start pinning your travels.</p>
-                        <button className="btn btn-primary" onClick={() => { window.location.hash = '#/map'; }}>Open Map</button>
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="p-4 bg-light rounded-3">
+                                <h1>Welcome back, {user.name}!</h1>
+                                <p className="lead">You're signed in. Visit the Map to start pinning your travels.</p>
+                                <button className="btn btn-primary" onClick={() => { window.location.hash = '#/map'; }}>Open Map</button>
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="p-4">
+                                <div className="text-center mb-4">
+                                    <img src={logo} alt="Dot the World Logo" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
+                                </div>
+                                <h3>About Dot the World</h3>
+                                <p className="lead">
+                                    Your personal travel companion for capturing memories around the globe.
+                                </p>
+                                <p>
+                                    Dot the World is an interactive travel journal that lets you pin your favorite places, share photos, and document your adventures on a beautiful map. Whether it's a hidden restaurant, a breathtaking viewpoint, or a memorable museum visit, every location tells a story.
+                                </p>
+                                <ul>
+                                    <li>📍 Drop pins anywhere in the world</li>
+                                    <li>📸 Add photos and personal notes</li>
+                                    <li>🗂️ Organize by custom categories</li>
+                                    <li>🔍 Search and filter your travels</li>
+                                    <li>🗺️ Visualize your journey on an interactive map</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
@@ -95,9 +121,25 @@ export default function Home() {
                             </div>
                             <div className="col-md-6">
                                 <div className="p-4">
+                                    <div className="text-center mb-4">
+                                        <img src={logo} alt="Dot the World Logo" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
+                                    </div>
                                     <h3>About Dot the World</h3>
+                                    <p className="lead">
+                                        Your personal travel companion for capturing memories around the globe.
+                                    </p>
                                     <p>
-                                        Dot the World is a personal travel-journal map. Sign up to drop pins, add photos and tips, and build a visual record of your travels.
+                                        Dot the World is an interactive travel journal that lets you pin your favorite places, share photos, and document your adventures on a beautiful map. Whether it's a hidden restaurant, a breathtaking viewpoint, or a memorable museum visit, every location tells a story.
+                                    </p>
+                                    <ul>
+                                        <li>📍 Drop pins anywhere in the world</li>
+                                        <li>📸 Add photos and personal notes</li>
+                                        <li>🗂️ Organize by custom categories</li>
+                                        <li>🔍 Search and filter your travels</li>
+                                        <li>🗺️ Visualize your journey on an interactive map</li>
+                                    </ul>
+                                    <p className="text-muted">
+                                        Start your journey today - sign up and begin dotting the world!
                                     </p>
                                 </div>
                             </div>

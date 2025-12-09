@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import PinDetailsPanel from './PinDetailsPanel';
 import PinListPanel from './PinListPanel';
+import { getCurrentUser } from '../utils/auth';
 
 const STORAGE_KEY = 'dots_pins_v2';
 
@@ -34,6 +35,7 @@ export default function Map() {
   const [tempPin, setTempPin] = useState(null); // {lat, lng, color}
   // Remove ghostPin state; no pin follows the mouse
   const [userLocation, setUserLocation] = useState(null);
+  const [mapBounds, setMapBounds] = useState(null);
 
   // Save pins to localStorage whenever they change
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function Map() {
     if (mapRef.current) return;
     mapRef.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=ixBfIZyyRA6omFxQhu4x',
       center: [0, 20],
       zoom: 2,
     });
@@ -86,6 +88,17 @@ export default function Map() {
       setTempPin({ lat: e.lngLat.lat, lng: e.lngLat.lng, color: '#1976d2' }); // default color, will update on save
     }
     mapRef.current.on('click', handleMapClick);
+
+    // Update bounds when map moves
+    const updateBounds = () => {
+      if (mapRef.current) {
+        const bounds = mapRef.current.getBounds();
+        setMapBounds(bounds);
+      }
+    };
+    mapRef.current.on('moveend', updateBounds);
+    // Set initial bounds
+    mapRef.current.on('load', updateBounds);
 
     return () => {
       if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -178,6 +191,10 @@ export default function Map() {
       if (def && (!details.customCat || !details.customCat.trim())) {
         color = def.color;
       }
+      
+      // Add author information
+      const currentUser = getCurrentUser();
+      
       setPins(pins => [
         ...pins,
         {
@@ -187,6 +204,11 @@ export default function Map() {
           locationName: modal.locationName,
           ...details,
           color,
+          author: currentUser ? {
+            name: currentUser.name,
+            email: currentUser.email
+          } : null,
+          createdAt: new Date().toISOString()
         },
       ]);
       setTempPin(null);
@@ -198,32 +220,140 @@ export default function Map() {
     setModal({ show: false, lngLat: null, locationName: '', viewPin: undefined });
   }
 
+  function handleDeletePin(pinId) {
+    if (window.confirm('Are you sure you want to delete this pin?')) {
+      setPins(pins => pins.filter(p => p.id !== pinId));
+      setModal({ show: false, lngLat: null, locationName: '', viewPin: undefined });
+    }
+  }
+
+  function handleAddComment(pinId, comment) {
+    setPins(pins => pins.map(pin => {
+      if (pin.id === pinId) {
+        return {
+          ...pin,
+          comments: [...(pin.comments || []), comment]
+        };
+      }
+      return pin;
+    }));
+    // Update the modal viewPin to show the new comment
+    setModal(prev => ({
+      ...prev,
+      viewPin: prev.viewPin ? {
+        ...prev.viewPin,
+        comments: [...(prev.viewPin.comments || []), comment]
+      } : prev.viewPin
+    }));
+  }
+
+  function handleEditPin(pinId, updates) {
+    setPins(pins => pins.map(pin => {
+      if (pin.id === pinId) {
+        return {
+          ...pin,
+          ...updates
+        };
+      }
+      return pin;
+    }));
+    // Update the modal viewPin
+    setModal(prev => ({
+      ...prev,
+      viewPin: prev.viewPin ? {
+        ...prev.viewPin,
+        ...updates
+      } : prev.viewPin
+    }));
+  }
+
+  function handleLikeComment(pinId, commentIndex) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    setPins(pins => pins.map(pin => {
+      if (pin.id === pinId) {
+        const updatedComments = [...(pin.comments || [])];
+        const comment = updatedComments[commentIndex];
+        if (comment) {
+          const likes = comment.likes || [];
+          const userLiked = likes.includes(currentUser.email);
+          
+          updatedComments[commentIndex] = {
+            ...comment,
+            likes: userLiked 
+              ? likes.filter(email => email !== currentUser.email)
+              : [...likes, currentUser.email]
+          };
+        }
+        return {
+          ...pin,
+          comments: updatedComments
+        };
+      }
+      return pin;
+    }));
+    
+    // Update modal
+    setModal(prev => {
+      if (prev.viewPin && prev.viewPin.id === pinId) {
+        const updatedComments = [...(prev.viewPin.comments || [])];
+        const comment = updatedComments[commentIndex];
+        if (comment) {
+          const likes = comment.likes || [];
+          const userLiked = likes.includes(currentUser.email);
+          
+          updatedComments[commentIndex] = {
+            ...comment,
+            likes: userLiked 
+              ? likes.filter(email => email !== currentUser.email)
+              : [...likes, currentUser.email]
+          };
+        }
+        
+        return {
+          ...prev,
+          viewPin: {
+            ...prev.viewPin,
+            comments: updatedComments
+          }
+        };
+      }
+      return prev;
+    });
+  }
+
   return (
-    <div className="container py-4" style={{maxWidth: '100vw', width: '100vw'}}>
-      <h2 style={{textAlign: 'left'}}>Home</h2>
-      <div className="mb-2 d-flex gap-2">
-        <button className="btn btn-sm btn-outline-secondary ms-auto" onClick={()=>window.location.reload()}>Reset View</button>
-      </div>
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start', width: '100%', minHeight: 540, gap: 24}}>
-        <div style={{flex: '0 0 380px', minWidth: 320, maxWidth: 420, maxHeight: 540, overflowY: 'auto'}}>
+    <div className="container-fluid py-4" style={{maxWidth: '100%', width: '100%', padding: '1rem'}}>
+      <div className="map-layout" style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start', width: '100%', minHeight: '60vh', gap: 24}}>
+        <div className="pin-panel" style={{flex: '0 0 380px', minWidth: 280, maxWidth: 420, maxHeight: '70vh', overflowY: 'auto'}}>
           {modal.show ? (
             <PinDetailsPanel
               show={modal.show}
               onClose={handleCloseModal}
               onSave={handleSavePin}
+              onDelete={handleDeletePin}
+              onAddComment={handleAddComment}
+              onEditPin={handleEditPin}
+              onLikeComment={handleLikeComment}
               locationName={modal.locationName}
               lat={modal.lngLat && modal.lngLat.lat}
               lng={modal.lngLat && modal.lngLat.lng}
               viewPin={modal.viewPin}
             />
           ) : (
-            <PinListPanel pins={pins} setModal={setModal} />
+            <PinListPanel 
+              pins={pins} 
+              setModal={setModal} 
+              mapBounds={mapBounds}
+              currentUser={getCurrentUser()}
+            />
           )}
         </div>
-        <div style={{flex: 1, minWidth: 0}}>
+        <div className="map-container" style={{flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
           <div
             ref={mapContainer}
-            style={{height:520, width:'100%', borderRadius:8, overflow:'hidden'}}
+            style={{height: '70vh', minHeight: 400, width:'100%', borderRadius:8, overflow:'hidden'}}
             id="maplibre-map"
           />
         </div>

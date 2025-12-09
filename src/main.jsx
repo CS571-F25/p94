@@ -4,6 +4,7 @@ import './index.css'
 import 'leaflet/dist/leaflet.css'
 import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom-theme.css';
 
 createRoot(document.getElementById('root')).render(
     <App />

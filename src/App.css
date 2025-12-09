@@ -51,19 +51,33 @@
 /* MapLibre map container styling */
 #maplibre-map {
   min-height: 400px;
-  height: 520px !important;
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 @media (max-width: 900px) {
-  .container.py-4 > div[style*='flex-direction: row'] {
+  .map-layout {
     flex-direction: column !important;
-    gap: 0 !important;
+    gap: 12px !important;
+  }
+  .pin-panel {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    max-height: 400px !important;
   }
   #maplibre-map {
-    min-height: 320px;
-    height: 320px !important;
+    height: 50vh !important;
+    min-height: 300px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .container-fluid {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  .pin-panel {
+    min-width: 100% !important;
   }
 }
