@@ -46,6 +46,48 @@ export default function PinDetailsPanel({ show, onClose, onSave, onDelete, onAdd
   const [replyTo, setReplyTo] = useState(null);
   const currentUser = getCurrentUser();
 
+  function handleAddToWishlist(pin) {
+    if (!currentUser) {
+      alert('Please log in to add to wishlist');
+      return;
+    }
+    
+    try {
+      const WISHLIST_STORAGE_KEY = 'dots_wishlist';
+      const allWishlists = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) || '{}');
+      const userWishlist = allWishlists[currentUser.email] || [];
+      
+      // Check if already in wishlist
+      const alreadyExists = userWishlist.some(item => 
+        item.place === pin.name && item.location === pin.locationName
+      );
+      
+      if (alreadyExists) {
+        alert('This place is already in your wishlist!');
+        return;
+      }
+      
+      const newItem = {
+        id: Date.now(),
+        place: pin.name,
+        location: pin.locationName,
+        description: pin.comment || '',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        visitedAt: null,
+        pinId: pin.id
+      };
+      
+      userWishlist.push(newItem);
+      allWishlists[currentUser.email] = userWishlist;
+      localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(allWishlists));
+      alert('Added to your wishlist!');
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      alert('Failed to add to wishlist. Please try again.');
+    }
+  }
+
   useEffect(() => {
     setCategory(DEFAULT_CATEGORIES[0].name);
     setCustomCat('');
@@ -215,7 +257,7 @@ export default function PinDetailsPanel({ show, onClose, onSave, onDelete, onAdd
             <div className="mb-2">
               {editedPhotos.map((p, i) => (
                 <div key={i} style={{display: 'inline-block', position: 'relative', marginRight: 6}}>
-                  <img src={p} alt="pic" style={{width:80, height:80, objectFit: 'cover'}}/>
+                  <img src={p} alt={`Photo ${i+1} thumbnail`} style={{width:80, height:80, objectFit: 'cover'}}/>
                   <button 
                     className="btn btn-danger btn-sm"
                     style={{position: 'absolute', top: 0, right: 0, padding: '2px 6px'}}
@@ -269,7 +311,7 @@ export default function PinDetailsPanel({ show, onClose, onSave, onDelete, onAdd
         </div>
         <div className="mb-2"><b>Description:</b> {viewPin.comment}</div>
         {viewPin.photos && viewPin.photos.length > 0 && (
-          <div className="mb-2"><b>Photos:</b><br/>{viewPin.photos.map((p,i)=>(<img key={i} src={p} alt="pic" style={{width:80,marginRight:6,marginTop:6}}/>))}</div>
+          <div className="mb-2"><b>Photos:</b><br/>{viewPin.photos.map((p,i)=>(<img key={i} src={p} alt={`Photo ${i+1} of ${viewPin.name}`} style={{width:80,marginRight:6,marginTop:6}}/>))}</div>
         )}
         
         {/* Comments Section */}
@@ -360,6 +402,15 @@ export default function PinDetailsPanel({ show, onClose, onSave, onDelete, onAdd
         
         <div className="d-flex gap-2 mt-2">
           <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>Close</button>
+          {currentUser && !isOwner && (
+            <button 
+              type="button" 
+              className="btn btn-success btn-sm"
+              onClick={() => handleAddToWishlist(viewPin)}
+            >
+              Add to Wishlist
+            </button>
+          )}
           {isOwner && (
             <>
               <button type="button" className="btn btn-primary btn-sm" onClick={() => setIsEditing(true)}>Edit</button>

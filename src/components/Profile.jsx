@@ -195,12 +195,12 @@ export default function Profile() {
                         >
                             Change Photo
                         </button>
-                        <h4>{user.name}</h4>
+                        <h2>{user.name}</h2>
                         <p className="text-muted mb-2">
                             <i className="bi bi-envelope"></i> {user.email}
                         </p>
                         <div className="mt-3 p-3 bg-light rounded">
-                            <h6>Travel Stats</h6>
+                            <h3>Travel Stats</h3>
                             <div className="d-flex justify-content-around mt-2">
                                 <div>
                                     <div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#D4A574'}}>{pins.length}</div>
@@ -219,7 +219,7 @@ export default function Profile() {
                 <div className="col-md-8">
                     <div className="card p-4 mb-3">
                         <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h5 className="mb-0">About Me</h5>
+                            <h3 className="mb-0">About Me</h3>
                             {!isEditing && (
                                 <button 
                                     className="btn btn-sm btn-outline-secondary" 
@@ -258,7 +258,7 @@ export default function Profile() {
                     </div>
 
                     <div className="card p-4">
-                        <h5 className="mb-3">My Places ({pins.length})</h5>
+                        <h3 className="mb-3">My Places ({pins.length})</h3>
                         <div className="row">
                             {pins.length === 0 ? (
                                 <div className="col-12">

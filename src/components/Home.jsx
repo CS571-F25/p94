@@ -52,9 +52,9 @@ export default function Home() {
                         <div className="col-md-6">
                             <div className="p-4">
                                 <div className="text-center mb-4">
-                                    <img src={logo} alt="Dot the World Logo" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
+                                    <img src={logo} alt="Dot the World Logo - circular icon with map pin" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
                                 </div>
-                                <h3>About Dot the World</h3>
+                                <h2>About Dot the World</h2>
                                 <p className="lead">
                                     Your personal travel companion for capturing memories around the globe.
                                 </p>
@@ -122,9 +122,9 @@ export default function Home() {
                             <div className="col-md-6">
                                 <div className="p-4">
                                     <div className="text-center mb-4">
-                                        <img src={logo} alt="Dot the World Logo" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
+                                        <img src={logo} alt="Dot the World Logo - circular icon with map pin" style={{width: '200px', height: '200px', marginBottom: '1rem'}} />
                                     </div>
-                                    <h3>About Dot the World</h3>
+                                    <h2>About Dot the World</h2>
                                     <p className="lead">
                                         Your personal travel companion for capturing memories around the globe.
                                     </p>

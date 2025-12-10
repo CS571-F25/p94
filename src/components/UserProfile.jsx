@@ -107,18 +107,18 @@ export default function UserProfile() {
                                 </div>
                             )}
                         </div>
-                        <h4>{userProfile.name}</h4>
+                        <h2>{userProfile.name}</h2>
                         <p className="text-muted small mb-3">{userProfile.email}</p>
                         
                         {userProfile.description && (
                             <div className="mb-3 p-3 bg-light rounded text-start">
-                                <h6>About</h6>
+                                <h3>About</h3>
                                 <p className="small mb-0">{userProfile.description}</p>
                             </div>
                         )}
                         
                         <div className="mt-3 p-3 bg-light rounded">
-                            <h6>Travel Stats</h6>
+                            <h3>Travel Stats</h3>
                             <div className="d-flex justify-content-around mt-2">
                                 <div>
                                     <div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#D4A574'}}>
@@ -139,7 +139,7 @@ export default function UserProfile() {
                 
                 <div className="col-md-8">
                     <div className="card p-4">
-                        <h5 className="mb-3">{userProfile.name}'s Places ({userPins.length})</h5>
+                        <h3 className="mb-3">{userProfile.name}'s Places ({userPins.length})</h3>
                         <div className="row">
                             {userPins.length === 0 ? (
                                 <div className="col-12">

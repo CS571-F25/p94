@@ -4,10 +4,20 @@ import logo from '../assets/DotTheWorld.png'
 
 export default function NavBar(){
     const [user, setUser] = useState(getCurrentUser())
+    const [userProfile, setUserProfile] = useState(null)
     const [currentPage, setCurrentPage] = useState('Home')
 
     useEffect(()=>{
-        function onAuth(){ setUser(getCurrentUser()) }
+        function onAuth(){ 
+            const currentUser = getCurrentUser()
+            setUser(currentUser)
+            if (currentUser) {
+                loadUserProfile(currentUser.email)
+            } else {
+                setUserProfile(null)
+            }
+        }
+        onAuth()
         window.addEventListener('authChanged', onAuth)
         window.addEventListener('storage', onAuth)
         return ()=>{
@@ -16,12 +26,23 @@ export default function NavBar(){
         }
     },[])
 
+    function loadUserProfile(email) {
+        try {
+            const profiles = JSON.parse(localStorage.getItem('dots_user_profiles') || '{}')
+            setUserProfile(profiles[email] || null)
+        } catch (error) {
+            console.error('Error loading profile:', error)
+            setUserProfile(null)
+        }
+    }
+
     useEffect(() => {
         function updatePage() {
             const hash = window.location.hash
             if (hash === '#/' || hash === '') setCurrentPage('Home')
             else if (hash === '#/map') setCurrentPage('Map')
             else if (hash === '#/profile') setCurrentPage('Me')
+            else if (hash === '#/wishlist') setCurrentPage('Wishlist')
             else if (hash === '#/contact') setCurrentPage('Contact')
             else if (hash === '#/projects') setCurrentPage('Projects')
         }
@@ -48,10 +69,26 @@ export default function NavBar(){
                                                         <>
                                                                 <li className="nav-item"><a className="nav-link" href="#/">Home</a></li>
                                                                 <li className="nav-item"><a className="nav-link" href="#/map">Map</a></li>
-                                                                <li className="nav-item"><a className="nav-link" href="#/profile">Me</a></li>
+                                                                <li className="nav-item"><a className="nav-link" href="#/wishlist">Wishlist</a></li>
                                                                 {/* <li className="nav-item"><a className="nav-link" href="#/projects">Projects</a></li> */}
                                                                 <li className="nav-item"><a className="nav-link" href="#/contact">Contact</a></li>
                                                                 <li className="nav-item ms-3"><span className="text-light">Hi, {user.name}</span></li>
+                                                                <li className="nav-item ms-2">
+                                                                    <a href="#/profile" style={{textDecoration: 'none'}}>
+                                                                        <img 
+                                                                            src={userProfile?.profilePic || logo} 
+                                                                            alt="Profile"
+                                                                            style={{
+                                                                                width: '32px',
+                                                                                height: '32px',
+                                                                                borderRadius: '50%',
+                                                                                objectFit: 'cover',
+                                                                                border: '2px solid white',
+                                                                                cursor: 'pointer'
+                                                                            }}
+                                                                        />
+                                                                    </a>
+                                                                </li>
                                                                 <li className="nav-item ms-2"><button className="btn btn-sm btn-outline-light" onClick={() => {
                                                                     if (window.confirm('Are you sure you want to log out?')) {
                                                                         logout();

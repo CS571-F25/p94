@@ -10,6 +10,7 @@ import Contact from './components/Contact';
 import MapPage from './components/Map';
 import Profile from './components/Profile';
 import UserProfile from './components/UserProfile';
+import Wishlist from './components/Wishlist';
 import { getCurrentUser } from './utils/auth';
 
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/map" element={user ? <MapPage /> : <Navigate to="/" replace />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/" replace />} />
         <Route path="/user-profile/:email" element={<UserProfile />} />
+        <Route path="/wishlist" element={user ? <Wishlist /> : <Navigate to="/" replace />} />
         {/* <Route path="/projects" element={<Projects />} /> */}
         <Route path="/contact" element={<Contact />} />
       </Routes>
