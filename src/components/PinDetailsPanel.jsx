@@ -413,7 +413,7 @@ export default function PinDetailsPanel({ show, onClose, onSave, onDelete, onAdd
           )}
           {isOwner && (
             <>
-              <button type="button" className="btn btn-primary btn-sm" onClick={() => setIsEditing(true)}>Edit</button>
+              <button type="button" className="btn btn-info btn-sm" onClick={() => setIsEditing(true)}>Edit</button>
               {onDelete && (
                 <button type="button" className="btn btn-danger btn-sm" onClick={() => onDelete(viewPin.id)}>Delete</button>
               )}
